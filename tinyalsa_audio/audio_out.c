@@ -424,7 +424,6 @@ static int audio_out_set_parameters(struct audio_stream *stream, const char *kvp
 {
 	struct tinyalsa_audio_stream_out *stream_out;
 	struct str_parms *parms;
-	char value_string[32] = { 0 };
 	int value;
 	int rc;
 
@@ -442,11 +441,9 @@ static int audio_out_set_parameters(struct audio_stream *stream, const char *kvp
 	if(parms == NULL)
 		return -1;
 
-	rc = str_parms_get_str(parms, AUDIO_PARAMETER_STREAM_ROUTING, value_string, sizeof(value_string));
+	rc = str_parms_get_int(parms, AUDIO_PARAMETER_STREAM_ROUTING, &value);
 	if(rc < 0)
 		goto error_params;
-
-	value = atoi(value_string);
 
 	pthread_mutex_lock(&stream_out->device->lock);
 
@@ -467,7 +464,6 @@ static int audio_out_set_parameters(struct audio_stream *stream, const char *kvp
 
 error_params:
 	str_parms_destroy(parms);
-
 	return -1;
 }
 

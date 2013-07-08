@@ -538,7 +538,6 @@ static int audio_in_set_parameters(struct audio_stream *stream, const char *kvpa
 {
 	struct tinyalsa_audio_stream_in *stream_in;
 	struct str_parms *parms;
-	char value_string[32] = { 0 };
 	int value;
 	int rc;
 
@@ -556,11 +555,11 @@ static int audio_in_set_parameters(struct audio_stream *stream, const char *kvpa
 	if(parms == NULL)
 		return -1;
 
-	rc = str_parms_get_str(parms, AUDIO_PARAMETER_STREAM_INPUT_SOURCE, value_string, sizeof(value_string));
-	if(rc < 0)
+	rc = str_parms_get_int(parms, AUDIO_PARAMETER_STREAM_INPUT_SOURCE, &value);
+	if(rc == -EINVAL)
 		goto error_params;
-
-	value = atoi(value_string);
+	else if(rc == -ENOENT)
+		goto other_param;
 
 	pthread_mutex_lock(&stream_in->device->lock);
 
@@ -574,11 +573,11 @@ static int audio_in_set_parameters(struct audio_stream *stream, const char *kvpa
 
 	pthread_mutex_unlock(&stream_in->device->lock);
 
-	rc = str_parms_get_str(parms, AUDIO_PARAMETER_STREAM_ROUTING, value_string, sizeof(value_string));
-	if(rc < 0)
+	rc = str_parms_get_int(parms, AUDIO_PARAMETER_STREAM_ROUTING, &value);
+	if(rc == EINVAL)
 		goto error_params;
-
-	value = atoi(value_string);
+	else if(rc == -ENOENT)
+		goto other_param;
 
 	pthread_mutex_lock(&stream_in->device->lock);
 
@@ -595,6 +594,8 @@ static int audio_in_set_parameters(struct audio_stream *stream, const char *kvpa
 	return 0;
 
 error_params:
+	ALOGW("%s(%p, %s) PARAMETER ERROR",  __func__, stream, kvpairs);
+other_param:
 	str_parms_destroy(parms);
 
 	return -1;
