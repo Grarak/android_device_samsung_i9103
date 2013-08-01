@@ -42,7 +42,6 @@ PRODUCT_PACKAGES += \
 
 # Init-scripts
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/fstab.n1:root/fstab.n1 \
     $(LOCAL_PATH)/lpm.rc:root/lpm.rc \
     $(LOCAL_PATH)/init.n1.rc:root/init.n1.rc \
     $(LOCAL_PATH)/init.n1.usb.rc:root/init.n1.usb.rc \
@@ -50,7 +49,7 @@ PRODUCT_COPY_FILES += \
 
 # Vold and Storage
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/vold.fstab:system/etc/vold.fstab
+    $(LOCAL_PATH)/fstab.n1:root/fstab.n1
 
 # Wifi
 PRODUCT_COPY_FILES += \
