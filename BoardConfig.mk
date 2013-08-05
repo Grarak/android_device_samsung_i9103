@@ -19,7 +19,7 @@ TARGET_SPECIFIC_HEADER_PATH := device/samsung/i9103/include
 TARGET_CPU_ABI := armeabi-v7a
 TARGET_CPU_ABI2 := armeabi
 TARGET_CPU_SMP := true
-TARGET_CPU_VARIANT := generic #tegra2
+TARGET_CPU_VARIANT := tegra2 # with bionic patch else generic
 
 TARGET_ARCH := arm
 TARGET_ARCH_VARIANT := armv7-a
@@ -27,7 +27,7 @@ TARGET_ARCH_VARIANT_CPU := cortex-a9
 
 # Avoid the generation of ldrcc instructions
 NEED_WORKAROUND_CORTEX_A9_745320 := true
-COMMON_GLOBAL_CFLAGS += -DWORKAROUND_CORTEX_A9_745320
+# COMMON_GLOBAL_CFLAGS += -DWORKAROUND_CORTEX_A9_745320
 
 # DO NOT change the following line to vfpv3 as it is not really supported on our device!
 TARGET_ARCH_VARIANT_FPU := vfpv3-d16
@@ -68,6 +68,7 @@ BOARD_FLASH_BLOCK_SIZE := 4096
 # Use this flag if the board has a ext4 partition larger than 2gb
 BOARD_HAS_LARGE_FILESYSTEM := true
 
+#TARGET_PREBUILT_KERNEL = device/samsung/i9103/kernel
 TARGET_KERNEL_SOURCE := kernel/samsung/n1
 TARGET_KERNEL_CONFIG := cyanogenmod_i9103_defconfig
 # TARGET_KERNEL_SELINUX_CONFIG := selinux_config
@@ -167,6 +168,8 @@ BOARD_SUPPRESS_EMMC_WIPE := true
 TARGET_RECOVERY_INITRC := $(LOCAL_PATH)/recovery/init.recovery.n1.rc
 BOARD_CUSTOM_RECOVERY_KEYMAPPING := ../../device/samsung/i9103/recovery/recovery_keys.c
 BOARD_CUSTOM_GRAPHICS := ../../../device/samsung/i9103/recovery/graphics.c
+TARGET_RECOVERY_FSTAB := device/samsung/i9103/fstab.n1
+RECOVERY_FSTAB_VERSION := 2
 
 BOARD_UMS_LUNFILE := "/sys/devices/platform/fsl-tegra-udc/gadget/lun%d/file"
 BOARD_USES_MMCUTILS := true
