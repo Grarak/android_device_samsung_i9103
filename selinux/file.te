@@ -1,5 +1,7 @@
 type firmware_camera, file_type;
 
-allow sysfs_devices_tegradc sysfs:filesystem associate;
-allow sysfs_devices_system_cpu sysfs:filesystem associate;
+type restorecon_exec, exec_type, file_type;
+type setenforce_exec, exec_type, file_type;
+
+type cbd_exec, exec_type, file_type;
 
