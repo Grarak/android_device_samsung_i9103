@@ -53,12 +53,10 @@ on fs
 
     mkdir /mnt/modem 0770 radio system
 
-    # allow dmesg via normal adb shell
-    #chmod 660 /dev/kmsg
-    #chown root shell /dev/kmsg
-    exec /system/xbin/sysctl -w kernel.dmesg_restrict=0
-
 on post-fs-data
+    # sysctl.conf
+    exec /system/xbin/sysctl -p
+
     mkdir /data/misc/wifi 0770 wifi wifi
     mkdir /data/misc/wifi/sockets 0770 wifi wifi
     mkdir /data/misc/dhcp 0770 dhcp dhcp

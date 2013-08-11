@@ -87,6 +87,10 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/mkshrc:system/etc/mkshrc \
     $(LOCAL_PATH)/configs/busybox.fstab:system/etc/fstab
 
+# Kernel tweaks
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/sysctl.conf:system/etc/sysctl.conf
+
 # Install the features available on this device.
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.audio.low_latency.xml:system/etc/permissions/android.hardware.audio.low_latency.xml \
