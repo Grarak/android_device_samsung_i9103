@@ -10,7 +10,7 @@ on early-init
 
     mkdir /storage 0775 system system
     mkdir /storage/sdcard0 0775 system system
-    mkdir /storage/sdcard1 0500 system system
+    mkdir /storage/sdcard1 0775 system system
     mkdir /storage/usbdisk0 0775 system system
     mkdir /storage/usbdisk1 0000 system system
 
@@ -52,6 +52,11 @@ on fs
     chmod 0775 /efs/wifi
 
     mkdir /mnt/modem 0770 radio system
+
+    # allow dmesg via normal adb shell
+    #chmod 660 /dev/kmsg
+    #chown root shell /dev/kmsg
+    exec /system/xbin/sysctl -w kernel.dmesg_restrict=0
 
 on post-fs-data
     mkdir /data/misc/wifi 0770 wifi wifi
@@ -223,8 +228,10 @@ on boot
 #    write /sys/block/mmcblk0/queue/read_ahead_kb 2048
 #    write /sys/block/mmcblk1/queue/read_ahead_kb 2048
 
-# mute gc alloc/free in logcat
+# mute gc alloc/free in logcat (to move in system.prop)
     setprop dalvik.vm.debug.alloc 0
+    setprop dalvik.vm.heapgrowthlimit 72m
+    setprop dalvik.vm.heapstartsize 32m
 
 # GPS
     chown radio system /dev/ttyHS0
@@ -246,7 +253,8 @@ on boot
     chmod 0660 /dev/tspdrv
     chown root shell /dev/tspdrv
     chmod 0660 /sys/vibrator/pwm_val
-    chown system system /sys/vibrator/pwm_val
+    chown shell system /sys/vibrator/pwm_val
+    chown system system /sys/class/timed_output/vibrator/pwm_value
 
 #SISO-PLAYREADY-CHANGES
 #DRM directory creation
@@ -335,9 +343,9 @@ on boot
     chown system root /dev/min_online_cpus
     chown system root /dev/cpu_freq_min
     chown system root /dev/cpu_freq_max
-    setprop nvcpud.enabled true
+    setprop nvcpud.enabled false
     setprop nvcpud.config_refresh_ms 30000
-    start nvcpud
+#   start nvcpud
 
 service cpboot-daemon /sbin/cbd -d -o t -p 7
     class main
@@ -429,5 +437,5 @@ on property:sys.boot_completed=1
     write /sys/devices/system/cpu/cpufreq/interactive/boost_factor 2
     write /sys/devices/system/cpu/cpufreq/interactive/sustain_load 80
     write /sys/module/cpuidle/parameters/lp2_in_idle 1
-    stop nvcpud
+#   stop nvcpud
 

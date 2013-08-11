@@ -7,11 +7,13 @@
 LOCAL_PATH := device/samsung/i9103
 
 PRODUCT_PACKAGES += \
-    DeviceSettings \
     libnetcmdiface \
     com.android.future.usb.accessory \
     SamsungServiceMode \
     Torch
+
+# Will be removed soon
+PRODUCT_PACKAGES += DeviceSettings
 
 # Charger
 PRODUCT_PACKAGES += anicharger
@@ -24,6 +26,7 @@ PRODUCT_PACKAGES += \
     camera.tegra \
     gralloc.tegra \
     hwcomposer.tegra \
+    libsecril-client libsecril-client-sap \
     audio.primary.n1 \
     audio.a2dp.default \
     audio.usb.default

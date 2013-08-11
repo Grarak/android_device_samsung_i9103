@@ -19,7 +19,9 @@ TARGET_SPECIFIC_HEADER_PATH := device/samsung/i9103/include
 TARGET_CPU_ABI := armeabi-v7a
 TARGET_CPU_ABI2 := armeabi
 TARGET_CPU_SMP := true
-TARGET_CPU_VARIANT := tegra2 # with bionic patch else generic
+
+# with bionic patch else use "generic"
+TARGET_CPU_VARIANT := tegra2
 
 TARGET_ARCH := arm
 TARGET_ARCH_VARIANT := armv7-a
@@ -69,9 +71,11 @@ BOARD_FLASH_BLOCK_SIZE := 4096
 BOARD_HAS_LARGE_FILESYSTEM := true
 
 #TARGET_PREBUILT_KERNEL = device/samsung/i9103/kernel
+
 TARGET_KERNEL_SOURCE := kernel/samsung/n1
 TARGET_KERNEL_CONFIG := cyanogenmod_i9103_defconfig
 # TARGET_KERNEL_SELINUX_CONFIG := selinux_config
+# TARGET_KERNEL_TOOLCHAIN := prebuilts/gcc/$(HOST_PREBUILT_TAG)/arm/arm-eabi-4.7/bin/arm-eabi-
 
 TARGET_NO_KERNEL := false
 TARGET_NO_RECOVERY := false
@@ -83,6 +87,9 @@ ifeq ($(TARGET_NO_RECOVERY),false)
     BOARD_CUSTOM_BOOTIMG_MK := device/samsung/i9103/recovery/bootimg.mk
     TARGET_PREBUILT_RECOVERY_KERNEL := device/samsung/i9103/recovery/kernel-selinux
 endif
+
+# New CM 10.2 HW settings
+BOARD_HARDWARE_CLASS := hardware/samsung/cmhw
 
 # RIL
 BOARD_PROVIDES_LIBRIL := true
