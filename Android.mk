@@ -13,9 +13,6 @@
 # limitations under the License.
 
 ifeq ($(TARGET_DEVICE),i9103)
-
 LOCAL_PATH := $(call my-dir)
-
 include $(call all-makefiles-under,$(LOCAL_PATH))
-
 endif
