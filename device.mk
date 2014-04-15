@@ -13,8 +13,7 @@ PRODUCT_PACKAGES += \
     Torch \
     FM
 
-# Will be removed soon
-PRODUCT_PACKAGES += DeviceSettings
+PRODUCT_PACKAGES += AdvancedDisplay
 
 # Charger
 PRODUCT_PACKAGES += anicharger
