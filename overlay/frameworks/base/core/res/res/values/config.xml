@@ -122,6 +122,7 @@
     <!-- Control whether being in the desk dock (and powered) always
          keeps the screen on when charging. -->
     <integer name="config_deskDockKeepsScreenOn">0</integer>
+    <integer name="config_carDockKeepsScreenOn">1</integer>
 
     <!-- List of file paths for USB host busses to exclude from USB host support.
          For example, if the first USB bus on the device is used to communicate
@@ -196,5 +197,11 @@
 	 For example, a device with Home, Back and Menu keys would set this
 	 config to 7. -->
     <integer name="config_deviceHardwareKeys">7</integer>
+
+    <!-- Set to false to enable CRT-off animation. -->
+    <bool name="config_animateScreenLights">false</bool>
+
+    <!-- Disable lockscreen translucent decor by default -->
+    <bool name="config_enableLockScreenTranslucentDecor">true</bool>
 
 </resources>

@@ -1,4 +1,6 @@
-# RIL
+#
+# system.prop for i9103
+#
 rild.libpath=/system/lib/libsec-ril.so
 rild.libargs=-d /dev/ttyS0
 ro.ril.enable.3g.prefix=1
@@ -51,9 +53,6 @@ ro.telephony.call_ring.multiple=false
 # Render UI with GPU
 debug.sf.hw=1
 
-# Screenshot fix
-ro.bq.gpu_to_cpu_unsupported=1
-
 # Battery Tweaks
 pm.sleep_mode=1
 ro.ril.disable.power.collapse=0
@@ -95,3 +94,6 @@ ro.camcorder.videoModes=true
 
 # Disable strict mode (red border)
 persist.sys.strictmode.disable=1
+
+# Screenshot fix
+ro.bq.gpu_to_cpu_unsupported=1

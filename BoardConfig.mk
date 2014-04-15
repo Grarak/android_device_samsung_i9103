@@ -16,24 +16,19 @@ LOCAL_PATH := device/samsung/i9103
 TARGET_SPECIFIC_HEADER_PATH := device/samsung/i9103/include
 
 # CPU
+TARGET_ARCH := arm
 TARGET_CPU_ABI := armeabi-v7a
 TARGET_CPU_ABI2 := armeabi
 TARGET_CPU_SMP := true
-
-# with bionic patch else use "generic"
-TARGET_CPU_VARIANT := tegra2
-
-TARGET_ARCH := arm
 TARGET_ARCH_VARIANT := armv7-a
 TARGET_ARCH_VARIANT_CPU := cortex-a9
-
+TARGET_CPU_VARIANT := generic
 # Avoid the generation of ldrcc instructions
 NEED_WORKAROUND_CORTEX_A9_745320 := true
-# COMMON_GLOBAL_CFLAGS += -DWORKAROUND_CORTEX_A9_745320
-
 # DO NOT change the following line to vfpv3 as it is not really supported on our device!
 TARGET_ARCH_VARIANT_FPU := vfpv3-d16
 ARCH_ARM_HAVE_TLS_REGISTER := true
+ARCH_ARM_USE_NON_NEON_MEMCPY := true
 
 #TARGET_HAVE_TEGRA_ERRATA_657451 := true
 BOARD_VENDOR := samsung
@@ -42,12 +37,13 @@ TARGET_TEGRA_VERSION := ap20
 TARGET_BOARD_PLATFORM_GPU := tegra
 TARGET_BOOTLOADER_BOARD_NAME := n1
 TARGET_USERIMAGES_USE_EXT4 := true
+HAVE_SELINUX := true
 
 BOARD_NAND_PAGE_SIZE := 4096
 BOARD_NAND_SPARE_SIZE := 128
 BOARD_KERNEL_PAGESIZE := 2048
 BOARD_KERNEL_BASE := 0x10000000
-BOARD_KERNEL_CMDLINE := mem=511M@0M secmem=1M@511M mem=512M@512M vmalloc=256M fota_boot=false tegra_fbmem=800K@0x18012000 video=tegrafb console=ram usbcore.old_scheme_first=1 lp0_vec=8192@0x1819E000 emmc_checksum_done=true emmc_checksum_pass=true tegraboot=sdmmc gpt
+BOARD_KERNEL_CMDLINE := mem=511M@0M secmem=1M@511M mem=512M@512M vmalloc=256M fota_boot=false tegra_fbmem=800K@0x18012000 video=tegrafb console=ram usbcore.old_scheme_first=1 lp0_vec=8192@0x1819E000 emmc_checksum_done=true emmc_checksum_pass=true tegraboot=sdmmc gpt androidboot.selinux=permissive
 
 #BOARD_KERNEL_CMDLINE := mem=511M@0M secmem=1M@511M mem=512M@512M vmalloc=256M fota_boot=false video=tegrafb console=ram usbcore.old_scheme_first=1 #emmc_checksum_done=true emmc_checksum_pass=true tegraboot=sdmmc gpt 
 
@@ -60,9 +56,10 @@ BOARD_KERNEL_CMDLINE := mem=511M@0M secmem=1M@511M mem=512M@512M vmalloc=256M fo
 # kernel modules location (busybox)
 KERNEL_MODULES_DIR := /system/lib/modules
 
+
 # Filesystem
 BOARD_BOOTIMAGE_PARTITION_SIZE     := 8388608
-BOARD_RECOVERYIMAGE_PARTITION_SIZE := 5136896 # 5242880 bytes exactly
+BOARD_RECOVERYIMAGE_PARTITION_SIZE := 5388288
 BOARD_SYSTEMIMAGE_PARTITION_SIZE   := 629145600
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 2147483648
 BOARD_FLASH_BLOCK_SIZE := 4096
@@ -70,10 +67,10 @@ BOARD_FLASH_BLOCK_SIZE := 4096
 # Use this flag if the board has a ext4 partition larger than 2gb
 BOARD_HAS_LARGE_FILESYSTEM := true
 
-#TARGET_PREBUILT_KERNEL = device/samsung/i9103/kernel
+TARGET_PREBUILT_KERNEL = device/samsung/i9103/kernel
 
-TARGET_KERNEL_SOURCE := kernel/samsung/n1
-TARGET_KERNEL_CONFIG := cyanogenmod_i9103_defconfig
+#TARGET_KERNEL_SOURCE := kernel/samsung/n1
+#TARGET_KERNEL_CONFIG := gk_i9103_defconfig
 # TARGET_KERNEL_SELINUX_CONFIG := selinux_config
 # TARGET_KERNEL_TOOLCHAIN := prebuilts/gcc/$(HOST_PREBUILT_TAG)/arm/arm-eabi-4.7/bin/arm-eabi-
 
@@ -92,7 +89,7 @@ endif
 BOARD_HARDWARE_CLASS := hardware/samsung/cmhw
 
 # RIL
-BOARD_PROVIDES_LIBRIL := true
+#BOARD_PROVIDES_LIBRIL := true
 BOARD_MODEM_TYPE := xmm6260
 BOARD_MOBILEDATA_INTERFACE_NAME := "rmnet0"
 
@@ -106,18 +103,28 @@ BOARD_USE_TINYALSA_AUDIO := true
 BOARD_USES_PROPRIETARY_LIBCAMERA := true
 BOARD_SECOND_CAMERA_DEVICE := true
 BOARD_CAMERA_HAVE_ISO := true
-COMMON_GLOBAL_CFLAGS += -DHAVE_ISO -DDISABLE_HW_ID_MATCH_CHECK
+COMMON_GLOBAL_CFLAGS += -DHAVE_ISO -DDISABLE_HW_ID_MATCH_CHECK -DNEEDS_VECTORIMPL_SYMBOLS
 
 # Graphics
 BOARD_EGL_CFG := $(LOCAL_PATH)/configs/egl.cfg
-BOARD_EGL_NEEDS_LEGACY_FB := true
 USE_OPENGL_RENDERER := true
+BOARD_EGL_WORKAROUND_BUG_10194508 := true
+BOARD_NO_ALLOW_DEQUEUE_CURRENT_BUFFER := true
+SKIP_SET_METADATA := true
+BOARD_USE_MHEAP_SCREENSHOT := true
+BOARD_USES_HWCOMPOSER := true
+#BOARD_EGL_NEEDS_LEGACY_FB := true
+BOARD_EGL_NEEDS_FNW := true
+MAX_EGL_CACHE_KEY_SIZE := 4096
+MAX_EGL_CACHE_SIZE := 2146304
+NUM_FRAMEBUFFER_SURFACE_BUFFERS := 3
 
 # Enable WEBGL in WebKit
 ENABLE_WEBGL := true
 
 # HWComposer
 BOARD_USES_HWCOMPOSER := true
+SENSORS_NEED_SETRATE_ON_ENABLE := true
 
 # Bluetooth
 BOARD_HAVE_BLUETOOTH := true
@@ -189,19 +196,23 @@ TW_INTERNAL_STORAGE_PATH := "/sdcard"
 TW_INTERNAL_STORAGE_MOUNT_POINT := "sdcard"
 TW_EXTERNAL_STORAGE_PATH := "/external_sd"
 TW_EXTERNAL_STORAGE_MOUNT_POINT := "external_sd"
-
+TW_NO_SCREEN_BLANK := true
 TW_NO_REBOOT_BOOTLOADER := true
 TW_DEFAULT_EXTERNAL_STORAGE := true
 TW_HAS_DOWNLOAD_MODE := true
 TW_BRIGHTNESS_PATH := "/sys/class/backlight/pwm-backlight/brightness"
 TW_MAX_BRIGHTNESS := 255
+TWHAVE_SELINUX := true
+
+# Override healthd HAL
+BOARD_HAL_STATIC_LIBRARIES := libhealthd.n1
 
 # SElinux
 ifeq ($(HAVE_SELINUX),true)
-BOARD_SEPOLICY_DIRS := \
+BOARD_SEPOLICY_DIRS += \
     device/samsung/i9103/selinux
 
-BOARD_SEPOLICY_UNION := \
+BOARD_SEPOLICY_UNION += \
     file_contexts \
     file.te \
     init.te \

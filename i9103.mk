@@ -10,7 +10,8 @@ PRODUCT_PACKAGES += \
     libnetcmdiface \
     com.android.future.usb.accessory \
     SamsungServiceMode \
-    Torch
+    Torch \
+    FM
 
 # Will be removed soon
 PRODUCT_PACKAGES += DeviceSettings
@@ -49,6 +50,10 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/init.n1.rc:root/init.n1.rc \
     $(LOCAL_PATH)/init.n1.usb.rc:root/init.n1.usb.rc \
     $(LOCAL_PATH)/ueventd.n1.rc:root/ueventd.n1.rc
+
+# TWRP
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/recovery/twrp.fstab:recovery/root/etc/twrp.fstab
 
 # Vold and Storage
 PRODUCT_COPY_FILES += \
@@ -118,7 +123,8 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.usb.host.xml:system/etc/permissions/android.hardware.usb.host.xml \
     frameworks/native/data/etc/android.hardware.wifi.xml:system/etc/permissions/android.hardware.wifi.xml \
     frameworks/native/data/etc/android.hardware.wifi.direct.xml:system/etc/permissions/android.hardware.wifi.direct.xml \
-    frameworks/native/data/etc/handheld_core_hardware.xml:system/etc/permissions/handheld_core_hardware.xml
+    frameworks/native/data/etc/handheld_core_hardware.xml:system/etc/permissions/handheld_core_hardware.xml \
+    frameworks/native/data/etc/android.hardware.bluetooth_le.xml:system/etc/permissions/android.hardware.bluetooth_le.xml
 
 # Feature live wallpaper
 PRODUCT_COPY_FILES += \
@@ -135,11 +141,13 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # The OpenGL ES API level that is natively supported by this device.
 # This is a 16.16 fixed point number
 PRODUCT_PROPERTY_OVERRIDES += \
+    ro.zygote.disable_gl_preload=1 \
     ro.opengles.version=131072
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.sf.lcd_density=240 \
-    hwui.render_dirty_regions=false \
+    debug.hwui.render_dirty_regions=false \
+    ro.bq.gpu_to_cpu_unsupported=1 \
     dalvik.vm.lockprof.threshold=500 \
     dalvik.vm.execution-mode=int:jit \
     dalvik.vm.dexopt-data-only=1 \
@@ -158,6 +166,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
     media.stagefright.enable-http=true \
     media.stagefright.enable-rtsp=true \
     media.stagefright.enable-record=true
+
+ADDITIONAL_DEFAULT_PROPERTIES += \
+persist.sys.usb.config=mtp,adb \
+ro.bq.gpu_to_cpu_unsupported=1
 
 # Extended JNI checks
 # The extended JNI checks will cause the system to run more slowly, but they can spot a variety of nasty bugs
