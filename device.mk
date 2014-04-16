@@ -6,13 +6,20 @@
 
 LOCAL_PATH := device/samsung/i9103
 
+# Overlay to set device specific parameters
+DEVICE_PACKAGE_OVERLAYS := $(LOCAL_PATH)/overlay
+
+# Device uses high-density artwork where available
+PRODUCT_AAPT_CONFIG := normal hdpi
+PRODUCT_AAPT_PREF_CONFIG := hdpi
+PRODUCT_LOCALES += hdpi
+
 PRODUCT_PACKAGES += \
+    AdvancedDisplay \
     libnetcmdiface \
     com.android.future.usb.accessory \
     SamsungServiceMode \
     Torch
-
-PRODUCT_PACKAGES += AdvancedDisplay
 
 # Charger
 PRODUCT_PACKAGES += anicharger
@@ -44,18 +51,15 @@ PRODUCT_PACKAGES += \
 
 # Init-scripts
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/lpm.rc:root/lpm.rc \
-    $(LOCAL_PATH)/init.n1.rc:root/init.n1.rc \
-    $(LOCAL_PATH)/init.n1.usb.rc:root/init.n1.usb.rc \
-    $(LOCAL_PATH)/ueventd.n1.rc:root/ueventd.n1.rc
+    $(LOCAL_PATH)/rootdir/fstab.n1:root/fstab.n1 \
+    $(LOCAL_PATH)/rootdir/lpm.rc:root/lpm.rc \
+    $(LOCAL_PATH)/rootdir/init.n1.rc:root/init.n1.rc \
+    $(LOCAL_PATH)/rootdir/init.n1.usb.rc:root/init.n1.usb.rc \
+    $(LOCAL_PATH)/rootdir/ueventd.n1.rc:root/ueventd.n1.rc
 
 # TWRP
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/twrp.fstab:recovery/root/etc/twrp.fstab
-
-# Vold and Storage
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/fstab.n1:root/fstab.n1
 
 # Wifi
 PRODUCT_COPY_FILES += \
@@ -129,9 +133,6 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     packages/wallpapers/LivePicker/android.software.live_wallpaper.xml:system/etc/permissions/android.software.live_wallpaper.xml
 
-# Overlay to set device specific parameters
-DEVICE_PACKAGE_OVERLAYS := $(LOCAL_PATH)/overlay
-
 # RIL
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.telephony.ril_class=SamsungExynos4RIL \
@@ -181,16 +182,20 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # we have enough storage space to hold precise GC data
 PRODUCT_TAGS += dalvik.gc.type-precise
 
-# Device uses high-density artwork where available
-PRODUCT_AAPT_CONFIG := normal hdpi
-PRODUCT_AAPT_PREF_CONFIG := hdpi
-PRODUCT_LOCALES += hdpi
+# Keylayout
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/usr/keylayout/gpio-keys.kl:system/usr/keylayout/gpio-keys.kl \
+    $(LOCAL_PATH)/usr/keylayout/sec_jack.kl:system/usr/keylayout/sec_jack.kl \
+    $(LOCAL_PATH)/usr/keylayout/sec_key.kl:system/usr/keylayout/sec_key.kl \
+    $(LOCAL_PATH)/usr/keylayout/sec_touchkey.kl:system/usr/keylayout/sec_touchkey.kl \
+    $(LOCAL_PATH)/usr/keylayout/sii9234_rcp.kl:system/usr/keylayout/sii9234_rcp.kl \
+    $(LOCAL_PATH)/usr/keylayout/STMPE_keypad.kl:system/usr/keylayout/STMPE_keypad.kl
+
+# Idc
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/usr/idc/sec_touchscreen.idc:system/usr/idc/sec_touchscreen.idc \
+    $(LOCAL_PATH)/usr/idc/STMPE_keypad.idc:system/usr/idc/STMPE_keypad.idc \
 
 $(call inherit-product, frameworks/native/build/phone-hdpi-512-dalvik-heap.mk)
-
-# See comment at the top of this file. This is where the other
-# half of the device-specific product definition file takes care
-# of the aspects that require proprietary drivers that aren't
-# commonly available
 
 $(call inherit-product-if-exists, vendor/samsung/i9103/i9103-vendor.mk)

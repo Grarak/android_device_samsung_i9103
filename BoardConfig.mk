@@ -83,7 +83,7 @@ ifeq ($(TARGET_NO_RECOVERY),false)
     TARGET_PREBUILT_RECOVERY_KERNEL := device/samsung/i9103/recovery/kernel-selinux
 endif
 
-# New CM 10.2 HW settings
+# Hardware tunables
 BOARD_HARDWARE_CLASS := hardware/samsung/cmhw
 
 # RIL
@@ -171,7 +171,7 @@ BOARD_HAS_SDCARD_INTERNAL := true
 #
 BOARD_CHARGING_MODE_BOOTING_LPM := "/sys/class/power_supply/ac/online"
 BOARD_BATTERY_DEVICE_NAME := "battery"
-BOARD_CHARGER_RES := $(LOCAL_PATH)/res/charger
+BOARD_CHARGER_RES := $(LOCAL_PATH)/rootdir/charger
 
 # EMMC brickbug is removed in the kernel, but be better safe than sorry.
 BOARD_SUPPRESS_EMMC_WIPE := true
