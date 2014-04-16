@@ -67,7 +67,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Netflix hack
 PRODUCT_COPY_FILES += \
-    $(COMMON_PATH)/configs/98netflix:system/etc/init.d/98netflix
+    $(LOCAL_PATH)/configs/98netflix:system/etc/init.d/98netflix
 
 # GPS
 PRODUCT_COPY_FILES += \
