@@ -182,11 +182,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # we have enough storage space to hold precise GC data
 PRODUCT_TAGS += dalvik.gc.type-precise
 
-# Idc
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/usr/idc/sec_touchscreen.idc:system/usr/idc/sec_touchscreen.idc \
-    $(LOCAL_PATH)/usr/idc/STMPE_keypad.idc:system/usr/idc/STMPE_keypad.idc \
-
 $(call inherit-product, frameworks/native/build/phone-hdpi-512-dalvik-heap.mk)
 
 $(call inherit-product-if-exists, vendor/samsung/i9103/i9103-vendor.mk)
