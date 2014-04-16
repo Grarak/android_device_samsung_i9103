@@ -180,7 +180,7 @@ BOARD_SUPPRESS_EMMC_WIPE := true
 TARGET_RECOVERY_INITRC := $(LOCAL_PATH)/recovery/init.recovery.n1.rc
 BOARD_CUSTOM_RECOVERY_KEYMAPPING := ../../device/samsung/i9103/recovery/recovery_keys.c
 BOARD_CUSTOM_GRAPHICS := ../../../device/samsung/i9103/recovery/graphics.c
-TARGET_RECOVERY_FSTAB := device/samsung/i9103/fstab.n1
+TARGET_RECOVERY_FSTAB := device/samsung/i9103/rootdir/fstab.n1
 RECOVERY_FSTAB_VERSION := 2
 
 BOARD_UMS_LUNFILE := "/sys/devices/platform/fsl-tegra-udc/gadget/lun%d/file"
