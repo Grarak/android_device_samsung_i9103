@@ -186,11 +186,7 @@ int main()
             break;
         /* Other keys */
         case EVENT_VOLUMEDOWN_KEY_DOWN:
-            update_screen_on_wakeup_key2();
-            break;
         case EVENT_VOLUMEUP_KEY_DOWN:
-            update_screen_on_wakeup_key2();
-            break;
         case EVENT_CAMERA_KEY_DOWN:
             update_screen_on_wakeup_key2();
             break;

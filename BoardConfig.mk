@@ -13,7 +13,7 @@
 # limitations under the License.
 
 LOCAL_PATH := device/samsung/i9103
-TARGET_SPECIFIC_HEADER_PATH := device/samsung/i9103/include
+TARGET_SPECIFIC_HEADER_PATH := $(LOCAL_PATH)/include
 
 # CPU
 TARGET_ARCH := arm
@@ -79,8 +79,8 @@ TARGET_NO_RADIOIMAGE := true
 
 # Required to build a recovery image of 5MB max
 ifeq ($(TARGET_NO_RECOVERY),false)
-    BOARD_CUSTOM_BOOTIMG_MK := device/samsung/i9103/recovery/bootimg.mk
-    TARGET_PREBUILT_RECOVERY_KERNEL := device/samsung/i9103/recovery/kernel-selinux
+    BOARD_CUSTOM_BOOTIMG_MK := $(LOCAL_PATH)/recovery/bootimg.mk
+    TARGET_PREBUILT_RECOVERY_KERNEL := $(LOCAL_PATH)/recovery/kernel-selinux
 endif
 
 # Hardware tunables
@@ -178,9 +178,8 @@ BOARD_SUPPRESS_EMMC_WIPE := true
 
 # Recovery
 TARGET_RECOVERY_INITRC := $(LOCAL_PATH)/recovery/init.recovery.n1.rc
-BOARD_CUSTOM_RECOVERY_KEYMAPPING := ../../device/samsung/i9103/recovery/recovery_keys.c
-BOARD_CUSTOM_GRAPHICS := ../../../device/samsung/i9103/recovery/graphics.c
-TARGET_RECOVERY_FSTAB := device/samsung/i9103/rootdir/fstab.n1
+BOARD_CUSTOM_GRAPHICS := ../../../$(LOCAL_PATH)/recovery/graphics.c
+TARGET_RECOVERY_FSTAB := $(LOCAL_PATH)/rootdir/fstab.n1
 RECOVERY_FSTAB_VERSION := 2
 
 BOARD_UMS_LUNFILE := "/sys/devices/platform/fsl-tegra-udc/gadget/lun%d/file"
