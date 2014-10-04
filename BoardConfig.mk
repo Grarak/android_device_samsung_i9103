@@ -37,13 +37,12 @@ TARGET_TEGRA_VERSION := ap20
 TARGET_BOARD_PLATFORM_GPU := tegra
 TARGET_BOOTLOADER_BOARD_NAME := n1
 TARGET_USERIMAGES_USE_EXT4 := true
-HAVE_SELINUX := true
 
 BOARD_NAND_PAGE_SIZE := 4096
 BOARD_NAND_SPARE_SIZE := 128
 BOARD_KERNEL_PAGESIZE := 2048
 BOARD_KERNEL_BASE := 0x10000000
-BOARD_KERNEL_CMDLINE := mem=511M@0M secmem=1M@511M mem=512M@512M vmalloc=256M fota_boot=false tegra_fbmem=800K@0x18012000 video=tegrafb console=ram usbcore.old_scheme_first=1 lp0_vec=8192@0x1819E000 emmc_checksum_done=true emmc_checksum_pass=true tegraboot=sdmmc gpt androidboot.selinux=permissive
+BOARD_KERNEL_CMDLINE := mem=511M@0M secmem=1M@511M mem=512M@512M vmalloc=256M fota_boot=false tegra_fbmem=800K@0x18012000 video=tegrafb console=ram usbcore.old_scheme_first=1 lp0_vec=8192@0x1819E000 emmc_checksum_done=true emmc_checksum_pass=true tegraboot=sdmmc gpt
 
 #BOARD_KERNEL_CMDLINE := mem=511M@0M secmem=1M@511M mem=512M@512M vmalloc=256M fota_boot=false video=tegrafb console=ram usbcore.old_scheme_first=1 #emmc_checksum_done=true emmc_checksum_pass=true tegraboot=sdmmc gpt 
 
@@ -70,7 +69,7 @@ BOARD_HAS_LARGE_FILESYSTEM := true
 #TARGET_PREBUILT_KERNEL = device/samsung/i9103/kernel
 
 TARGET_KERNEL_SOURCE := kernel/samsung/n1
-TARGET_KERNEL_CONFIG := gk_i9103_defconfig
+TARGET_KERNEL_CONFIG := cyanogenmod_i9103_defconfig
 
 TARGET_NO_KERNEL := false
 TARGET_NO_RECOVERY := false
@@ -205,7 +204,6 @@ TWHAVE_SELINUX := true
 BOARD_HAL_STATIC_LIBRARIES := libhealthd.n1
 
 # SElinux
-ifeq ($(HAVE_SELINUX),true)
 BOARD_SEPOLICY_DIRS += \
     device/samsung/i9103/selinux
 
@@ -222,8 +220,6 @@ BOARD_SEPOLICY_UNION += \
     surfaceflinger.te \
     sensors_config.te \
     compatibility.te
-
-endif
 
 # Inherit from the proprietary version
 -include vendor/samsung/i9103/BoardConfigVendor.mk

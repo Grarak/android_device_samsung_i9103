@@ -1,55 +1,35 @@
+# Copyright (C) 2014 The CyanogenMod Project
 #
-# This file is the build configuration for a full Android
-# build for sapphire hardware. This cleanly combines a set of
-# device-specific aspects (drivers) with a device-agnostic
-# product configuration (apps).
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
-LOCAL_PATH := device/samsung/i9103
+$(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
+$(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
+$(call inherit-product, frameworks/native/build/phone-hdpi-512-dalvik-heap.mk)
+$(call inherit-product-if-exists, vendor/samsung/i9103/i9103-vendor.mk)
 
-# Overlay to set device specific parameters
+# Overlays
 DEVICE_PACKAGE_OVERLAYS := $(LOCAL_PATH)/overlay
+
+# Boot animation
+TARGET_SCREEN_HEIGHT := 800
+TARGET_SCREEN_WIDTH := 480
 
 # Device uses high-density artwork where available
 PRODUCT_AAPT_CONFIG := normal hdpi
 PRODUCT_AAPT_PREF_CONFIG := hdpi
-PRODUCT_LOCALES += hdpi
 
-PRODUCT_PACKAGES += \
-    AdvancedDisplay \
-    libnetcmdiface \
-    com.android.future.usb.accessory \
-    SamsungServiceMode \
-    Torch
-
-# Charger
-PRODUCT_PACKAGES += anicharger
-
-# HAL
-PRODUCT_PACKAGES += \
-    sensors.n1 \
-    lights.n1 \
-    power.tegra \
-    camera.tegra \
-    gralloc.tegra \
-    hwcomposer.tegra \
-    libsecril-client libsecril-client-sap \
-    audio.primary.n1 \
-    audio.a2dp.default \
-    audio.usb.default
-
-# SELinux
-ifeq ($(HAVE_SELINUX),true)
-PRODUCT_PACKAGES += \
-    libselinux libsepol
-endif
-
-# Filesystem management tools
-PRODUCT_PACKAGES += \
-    static_busybox \
-    make_ext4fs \
-    setup_fs
-
-# Init-scripts
+# Ramdisk
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/fstab.n1:root/fstab.n1 \
     $(LOCAL_PATH)/rootdir/lpm.rc:root/lpm.rc \
@@ -57,52 +37,11 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/init.n1.usb.rc:root/init.n1.usb.rc \
     $(LOCAL_PATH)/rootdir/ueventd.n1.rc:root/ueventd.n1.rc
 
-# TWRP
+# Recovery
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/twrp.fstab:recovery/root/etc/twrp.fstab
 
-# Wifi
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/wpa_supplicant.conf:system/etc/wifi/wpa_supplicant.conf
-
-PRODUCT_PROPERTY_OVERRIDES += \
-    wifi.interface=wlan0 \
-    wifi.supplicant_scan_interval=180
-
-# Netflix hack
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/98netflix:system/etc/init.d/98netflix
-
-# GPS
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/gps.conf:system/etc/gps.conf \
-    $(LOCAL_PATH)/configs/sirfgps.conf:system/etc/sirfgps.conf
-
-# Media
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/media_profiles.xml:system/etc/media_profiles.xml \
-    $(LOCAL_PATH)/configs/media_codecs.xml:system/etc/media_codecs.xml
-
-# Audio
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/audio_policy.conf:system/etc/audio_policy.conf \
-    $(LOCAL_PATH)/configs/tinyalsa-audio.xml:system/etc/tinyalsa-audio.xml
-
-# Camera
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/nvcamera.conf:system/etc/nvcamera.conf
-
-# Shell and busybox
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/bashrc:system/etc/bash/bashrc \
-    $(LOCAL_PATH)/configs/mkshrc:system/etc/mkshrc \
-    $(LOCAL_PATH)/configs/busybox.fstab:system/etc/fstab
-
-# Kernel tweaks
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/sysctl.conf:system/etc/sysctl.conf
-
-# Install the features available on this device.
+# Permissions
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.audio.low_latency.xml:system/etc/permissions/android.hardware.audio.low_latency.xml \
     frameworks/native/data/etc/android.hardware.camera.autofocus.xml:system/etc/permissions/android.hardware.camera.autofocus.xml \
@@ -129,59 +68,85 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/handheld_core_hardware.xml:system/etc/permissions/handheld_core_hardware.xml \
     frameworks/native/data/etc/android.hardware.bluetooth_le.xml:system/etc/permissions/android.hardware.bluetooth_le.xml
 
-# Feature live wallpaper
+# Audio
+PRODUCT_PACKAGES += \
+    audio.primary.n1 \
+    audio.a2dp.default \
+    audio.usb.default
+
+# Audio configuration
 PRODUCT_COPY_FILES += \
-    packages/wallpapers/LivePicker/android.software.live_wallpaper.xml:system/etc/permissions/android.software.live_wallpaper.xml
+    $(LOCAL_PATH)/configs/audio_policy.conf:system/etc/audio_policy.conf \
+    $(LOCAL_PATH)/configs/tinyalsa-audio.xml:system/etc/tinyalsa-audio.xml
 
-# RIL
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.telephony.ril_class=SamsungExynos4RIL \
-    mobiledata.interfaces=rmnet0,rmnet1,rmnet2
+# Camera
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/nvcamera.conf:system/etc/nvcamera.conf
 
-# The OpenGL ES API level that is natively supported by this device.
-# This is a 16.16 fixed point number
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.zygote.disable_gl_preload=1 \
-    ro.opengles.version=131072
+PRODUCT_PACKAGES += \
+    camera.tegra
 
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.sf.lcd_density=240 \
-    debug.hwui.render_dirty_regions=false \
-    ro.bq.gpu_to_cpu_unsupported=1 \
-    dalvik.vm.lockprof.threshold=500 \
-    dalvik.vm.execution-mode=int:jit \
-    dalvik.vm.dexopt-data-only=1 \
-    dalvik.vm.dexopt-flags=m=y,u=n
+# Charger
+PRODUCT_PACKAGES += \
+    anicharger
 
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.media.dec.jpeg.memcap=8000000 \
-    ro.media.enc.hprof.vid.bps=8000000 \
-    ro.media.enc.jpeg.quality=100 \
-    ro.flash.resolution=1080
+# Filesystem management tools
+PRODUCT_PACKAGES += \
+    static_busybox \
+    make_ext4fs \
+    setup_fs
 
-PRODUCT_PROPERTY_OVERRIDES += \
-    media.stagefright.enable-player=true \
-    media.stagefright.enable-meta=true \
-    media.stagefright.enable-scan=true \
-    media.stagefright.enable-http=true \
-    media.stagefright.enable-rtsp=true \
-    media.stagefright.enable-record=true
+# Graphics
+PRODUCT_PACKAGES += \
+    gralloc.tegra \
+    hwcomposer.tegra
 
-ADDITIONAL_DEFAULT_PROPERTIES += \
-persist.sys.usb.config=mtp,adb \
-ro.bq.gpu_to_cpu_unsupported=1
+# GPS
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/gps.conf:system/etc/gps.conf \
+    $(LOCAL_PATH)/configs/sirfgps.conf:system/etc/sirfgps.conf
 
-# Extended JNI checks
-# The extended JNI checks will cause the system to run more slowly, but they can spot a variety of nasty bugs
-# before they have a chance to cause problems.
-# Default=true for development builds, set by android buildsystem.
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.kernel.android.checkjni=0 \
-    dalvik.vm.checkjni=false
+# Lights
+PRODUCT_PACKAGES += \
+    lights.n1 \
 
-# we have enough storage space to hold precise GC data
-PRODUCT_TAGS += dalvik.gc.type-precise
+# Media config
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/media_profiles.xml:system/etc/media_profiles.xml \
+    $(LOCAL_PATH)/configs/media_codecs.xml:system/etc/media_codecs.xml
 
-$(call inherit-product, frameworks/native/build/phone-hdpi-512-dalvik-heap.mk)
+# Misc
+PRODUCT_PACKAGES += \
+    AdvancedDisplay \
+    libnetcmdiface \
+    SamsungServiceMode
 
-$(call inherit-product-if-exists, vendor/samsung/i9103/i9103-vendor.mk)
+# Netflix hack
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/98netflix:system/etc/init.d/98netflix
+
+# Power
+PRODUCT_PACKAGES += \
+    power.tegra
+
+# Sensor
+PRODUCT_PACKAGES += \
+    sensors.n1
+
+# Shell and busybox
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/bashrc:system/etc/bash/bashrc \
+    $(LOCAL_PATH)/configs/mkshrc:system/etc/mkshrc \
+    $(LOCAL_PATH)/configs/busybox.fstab:system/etc/fstab
+
+# Torch
+PRODUCT_PACKAGES += \
+    Torch
+
+# USB
+PRODUCT_PACKAGES += \
+    com.android.future.usb.accessory
+
+# Wifi
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/wpa_supplicant.conf:system/etc/wifi/wpa_supplicant.conf

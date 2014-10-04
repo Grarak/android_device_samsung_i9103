@@ -185,57 +185,20 @@ struct tinyalsa_mixer_device *tinyalsa_mixer_get_device(struct tinyalsa_mixer_io
 	if(mixer_io == NULL)
 		return NULL;
 
-	// dump available devices
 	list = mixer_io->devices;
+
 	while(list != NULL) {
 		mixer_device = (struct tinyalsa_mixer_device *) list->data;
-		if(mixer_device != NULL) {
-			ALOGI("%s(%x): available device 0x%x", __func__, device, mixer_device->props.type);
-			if (mixer_device->props.type == device) {
-				// exact match
-				return mixer_device;
-			}
+		if(mixer_device != NULL && mixer_device->props.type == device) {
+			break;
+		} else {
+			mixer_device = NULL;
 		}
+
 		list = list->next;
 	}
 
-	list = mixer_io->devices;
-	while(list != NULL) {
-		mixer_device = (struct tinyalsa_mixer_device *) list->data;
-
-		if(mixer_device != NULL) {
-			if ((device & AUDIO_DEVICE_OUT_ALL_SCO)
-			 && (mixer_device->props.type & AUDIO_DEVICE_OUT_ALL_SCO)) {
-				ALOGI("Using device %x as BT Sco Headset", mixer_device->props.type);
-				return mixer_device;
-			}
-		}
-		list = list->next;
-	}
-
-
-#if 0
-	// return default input or output device if not found
-	switch (device) {
-	case AUDIO_DEVICE_NONE:
-		ALOGW("%s(%p) called for device NONE !?!", __func__, mixer_io);
-		return NULL;
-	case AUDIO_DEVICE_OUT_DEFAULT:
-		// default output device (use last)
-		return mixer_device;
-	case AUDIO_DEVICE_IN_DEFAULT:
-		// default input device (use last)
-		return mixer_device;
-	default:
-		if (device > AUDIO_DEVICE_BIT_IN)
-			return tinyalsa_mixer_get_device(mixer_io, AUDIO_DEVICE_IN_DEFAULT);
-		else
-			return tinyalsa_mixer_get_device(mixer_io, AUDIO_DEVICE_OUT_DEFAULT);
-	}
-#endif
-	ALOGW("%s: device type %x not found", __func__, device);
-
-	return NULL;
+	return mixer_device;
 }
 
 /*
@@ -452,7 +415,6 @@ void tinyalsa_mixer_config_start(void *data, const XML_Char *elem,
  * in system/core/include/system/audio.h
  */
 #ifdef SAMSUNG_FM_ENABLED
-#warn FM enabled !!
 					} else if(strcmp(attr[i], "fm") == 0) {
 						config_data->device_props.type = AUDIO_DEVICE_OUT_FM;
 #endif
@@ -766,16 +728,12 @@ int tinyalsa_mixer_set_route_ctrl(struct tinyalsa_mixer *mixer,
 
 	if(type == MIXER_CTL_TYPE_BOOL || type == MIXER_CTL_TYPE_INT ||
 		type == MIXER_CTL_TYPE_BYTE) {
-		for(i=0 ; i < (int) mixer_ctl_get_num_values(ctl) ; i++) {
-			ALOGD("%s: mixer_ctl_set_value(%p, %d, %d)", __func__,
-				ctl, i, value);
+		for(i=0 ; i < mixer_ctl_get_num_values(ctl) ; i++) {
 			rc = mixer_ctl_set_value(ctl, i, value);
 			if(rc < 0)
 				return -1;
 		}
 	} else if(type == MIXER_CTL_TYPE_ENUM || type == MIXER_CTL_TYPE_UNKNOWN) {
-		ALOGD("%s: mixer_ctl_set_enum_by_string(%p, %s)", __func__,
-			ctl, mixer_data->value);
 		rc = mixer_ctl_set_enum_by_string(ctl, mixer_data->value);
 		if(rc < 0)
 			return -1;
@@ -879,7 +837,6 @@ int tinyalsa_mixer_set_route(struct tinyalsa_mixer *mixer,
 		goto error_mixer;
 	}
 
-#if 0 /* Our implementation disables routes after pcm_close(). */
 	// No need to disable and enable the same route
 	if(mixer_device == mixer_io->device_current)
 		goto exit_mixer;
@@ -891,7 +848,6 @@ int tinyalsa_mixer_set_route(struct tinyalsa_mixer *mixer,
 			goto error_mixer;
 		}
 	}
-#endif
 
 	rc = tinyalsa_mixer_set_route_list(mixer, mixer_device->enable);
 	if(rc < 0) {
@@ -961,12 +917,7 @@ int tinyalsa_mixer_set_device_volume_with_attr(struct tinyalsa_mixer *mixer,
 		return -1;
 	}
 
-	if (!device && direction == TINYALSA_MIXER_DIRECTION_MODEM) {
-		ALOGV("%s: Try to force device AUDIO_DEVICE_OUT_BLUETOOTH_SCO_HEADSET", __func__);
-		mixer_device = tinyalsa_mixer_get_device(mixer_io, AUDIO_DEVICE_OUT_BLUETOOTH_SCO_HEADSET);
-	} else {
-		mixer_device = tinyalsa_mixer_get_device(mixer_io, device);
-	}
+	mixer_device = tinyalsa_mixer_get_device(mixer_io, device);
 	if(mixer_device == NULL) {
 		ALOGE("Unable to find a matching device: 0x%x", device);
 		goto error_mixer;
@@ -975,11 +926,6 @@ int tinyalsa_mixer_set_device_volume_with_attr(struct tinyalsa_mixer *mixer,
 	list = mixer_device->enable;
 
 	mixer_data = tinyalsa_mixer_get_data_with_attr(list, attr);
-	if(mixer_data == NULL && strcmp(attr, "voice-volume") == 0) {
-		attr = "voice-call";
-		ALOGW("%s: no voice-volume found, trying %s", __func__, attr);
-		mixer_data = tinyalsa_mixer_get_data_with_attr(list, attr);
-	}
 	if(mixer_data == NULL) {
 		ALOGE("Unable to find a matching ctrl with attr: %s", attr);
 		goto error_mixer;
@@ -1160,7 +1106,6 @@ int tinyalsa_mixer_set_state(struct tinyalsa_mixer *mixer,
 		return -1;
 	}
 
-#if 0 /* Our implementation disables routes after pcm_close(). */
 	if(!state && mixer_io->device_current != NULL &&
 		mixer_io->device_current->disable != NULL) {
 		rc = tinyalsa_mixer_set_route_list(mixer, mixer_io->device_current->disable);
@@ -1169,7 +1114,6 @@ int tinyalsa_mixer_set_state(struct tinyalsa_mixer *mixer,
 			goto error_mixer;
 		}
 	}
-#endif
 
 	mixer_device = tinyalsa_mixer_get_device(mixer_io, default_device);
 	if(mixer_device == NULL) {
@@ -1183,14 +1127,12 @@ int tinyalsa_mixer_set_state(struct tinyalsa_mixer *mixer,
 			ALOGE("Unable to enable default device controls");
 			goto error_mixer;
 		}
-#if 0 /* Our implementation disables routes after pcm_close(). */
 	} else if(!state && mixer_device != NULL) {
 		rc = tinyalsa_mixer_set_route_list(mixer, mixer_device->disable);
 		if(rc < 0) {
 			ALOGE("Unable to disable default device controls");
 			goto error_mixer;
 		}
-#endif
 	}
 
 	mixer_io->device_current = NULL;

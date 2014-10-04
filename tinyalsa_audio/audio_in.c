@@ -113,52 +113,6 @@ int audio_in_set_route(struct tinyalsa_audio_stream_in *stream_in,
 	return 0;
 }
 
-int audio_in_set_input_source(struct tinyalsa_audio_stream_in *stream_in,
-	audio_source_t input_source)
-{
-	int rc;
-	const char *value;
-	struct mixer *mixer;
-	struct mixer_ctl *ctl;
-
-	if(stream_in == NULL)
-		return -1;
-
-	switch(input_source) {
-		case AUDIO_SOURCE_CAMCORDER:
-			value = "Camcorder";
-			break;
-
-		case AUDIO_SOURCE_VOICE_RECOGNITION:
-			value = "Voice recognition";
-			break;
-
-		default:
-			value = "Default";
-			break;
-	}
-
-	mixer = mixer_open(0);
-	if (!mixer)
-		return -1;
-
-	ctl = mixer_get_ctl_by_name(mixer, "Input Source");
-	if(!ctl) {
-		mixer_close(mixer);
-		return -1;
-	}
-
-	rc = mixer_ctl_set_enum_by_string(ctl, value);
-	if(rc < 0) {
-		mixer_close(mixer);
-		return -1;
-	}
-
-	mixer_close(mixer);
-
-	return 0;
-}
-
 int audio_in_resampler_open(struct tinyalsa_audio_stream_in *stream_in)
 {
 	int rc;
@@ -473,7 +427,7 @@ static int audio_in_set_format(struct audio_stream *stream, audio_format_t forma
 {
 	struct tinyalsa_audio_stream_in *stream_in;
 
-	ALOGD("%s(%p, %d)", __func__, stream, format);
+	//ALOGD("%s(%p, %d)", __func__, stream, format);
 
 	if(stream == NULL)
 		return -1;
@@ -499,7 +453,7 @@ static int audio_in_standby(struct audio_stream *stream)
 	struct tinyalsa_audio_stream_in *stream_in;
 	int rc;
 
-	ALOGD("%s(%p)", __func__, stream);
+	//ALOGD("%s(%p)", __func__, stream);
 
 	if(stream == NULL)
 		return -1;
@@ -529,7 +483,7 @@ static int audio_in_standby(struct audio_stream *stream)
 
 static int audio_in_dump(const struct audio_stream *stream, int fd)
 {
-	ALOGD("%s(%p, %d)", __func__, stream, fd);
+	//ALOGD("%s(%p, %d)", __func__, stream, fd);
 
 	return 0;
 }
@@ -538,10 +492,11 @@ static int audio_in_set_parameters(struct audio_stream *stream, const char *kvpa
 {
 	struct tinyalsa_audio_stream_in *stream_in;
 	struct str_parms *parms;
+	char value_string[32] = { 0 };
 	int value;
 	int rc;
 
-	ALOGD("%s(%p, %s)", __func__, stream, kvpairs);
+	//ALOGD("%s(%p, %s)", __func__, stream, kvpairs);
 
 	if(stream == NULL || kvpairs == NULL)
 		return -1;
@@ -555,29 +510,11 @@ static int audio_in_set_parameters(struct audio_stream *stream, const char *kvpa
 	if(parms == NULL)
 		return -1;
 
-	rc = str_parms_get_int(parms, AUDIO_PARAMETER_STREAM_INPUT_SOURCE, &value);
-	if(rc == -EINVAL)
+	rc = str_parms_get_str(parms, AUDIO_PARAMETER_STREAM_ROUTING, value_string, sizeof(value_string));
+	if(rc < 0)
 		goto error_params;
-	else if(rc == -ENOENT)
-		goto other_param;
 
-	pthread_mutex_lock(&stream_in->device->lock);
-
-	/* We don't check for current input source value here, because
-	 *   1. the kernel driver sets it to default when PCM is closed,
-	 *   2. Android doesn't notify us to set it back to default.
-	 */
-	pthread_mutex_lock(&stream_in->lock);
-	audio_in_set_input_source(stream_in, (audio_source_t) value);
-	pthread_mutex_unlock(&stream_in->lock);
-
-	pthread_mutex_unlock(&stream_in->device->lock);
-
-	rc = str_parms_get_int(parms, AUDIO_PARAMETER_STREAM_ROUTING, &value);
-	if(rc == EINVAL)
-		goto error_params;
-	else if(rc == -ENOENT)
-		goto other_param;
+	value = atoi(value_string);
 
 	pthread_mutex_lock(&stream_in->device->lock);
 
@@ -594,8 +531,6 @@ static int audio_in_set_parameters(struct audio_stream *stream, const char *kvpa
 	return 0;
 
 error_params:
-	ALOGW("%s(%p, %s) PARAMETER ERROR",  __func__, stream, kvpairs);
-other_param:
 	str_parms_destroy(parms);
 
 	return -1;
@@ -604,7 +539,7 @@ other_param:
 static char *audio_in_get_parameters(const struct audio_stream *stream,
 	const char *keys)
 {
-	ALOGD("%s(%p, %s)", __func__, stream, keys);
+	//ALOGD("%s(%p, %s)", __func__, stream, keys);
 
 	return strdup("");
 }
@@ -661,8 +596,6 @@ static ssize_t audio_in_read(struct audio_stream_in *stream,
 			goto error;
 		}
 
-		audio_in_set_route(stream_in, stream_in->device_current);
-
 		stream_in->standby = 0;
 	}
 
@@ -692,14 +625,14 @@ static uint32_t audio_in_get_input_frames_lost(struct audio_stream_in *stream)
 
 static int audio_in_add_audio_effect(const struct audio_stream *stream, effect_handle_t effect)
 {
-	ALOGD("%s(%p, %p)", __func__, stream, effect);
+	//ALOGD("%s(%p, %p)", __func__, stream, effect);
 
 	return 0;
 }
 
 static int audio_in_remove_audio_effect(const struct audio_stream *stream, effect_handle_t effect)
 {
-	ALOGD("%s(%p, %p)", __func__, stream, effect);
+	//ALOGD("%s(%p, %p)", __func__, stream, effect);
 
 	return 0;
 }
@@ -849,8 +782,6 @@ int audio_hw_open_input_stream(struct audio_hw_device *dev,
 	pthread_mutex_lock(&tinyalsa_audio_stream_in->lock);
 
 	audio_in_set_route(tinyalsa_audio_stream_in, devices);
-
-	audio_in_set_input_source(tinyalsa_audio_stream_in, AUDIO_SOURCE_DEFAULT);
 
 	pthread_mutex_unlock(&tinyalsa_audio_device->lock);
 

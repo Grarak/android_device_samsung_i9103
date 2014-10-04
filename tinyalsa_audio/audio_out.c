@@ -39,8 +39,6 @@
 #include "audio_hw.h"
 #include "mixer.h"
 
-static int failcount = 0;
-
 /*
  * Functions
  */
@@ -170,8 +168,6 @@ int audio_out_write_process(struct tinyalsa_audio_stream_out *stream_out, void *
 	int i, j;
 	int rc;
 
-	int want_restart = 0;
-
 	if(stream_out == NULL || buffer == NULL || size <= 0)
 		return -1;
 
@@ -234,7 +230,6 @@ int audio_out_write_process(struct tinyalsa_audio_stream_out *stream_out, void *
 	if(buffer_in != NULL) {
 		if(stream_out->pcm == NULL || !pcm_is_ready(stream_out->pcm)) {
 			ALOGE("pcm device is not ready");
-			want_restart = 1;
 			goto error;
 		}
 
@@ -257,17 +252,6 @@ error:
 		free(buffer_out_resampler);
 	if(buffer_out_channels != NULL)
 		free(buffer_out_channels);
-
-
-	failcount++;
-	if (want_restart && failcount > 3) {
-		int pid = getpid();
-		if (pid > 0) {
-			failcount = 0;
-			ALOGW("restarting mediaserver, too much fails");
-			kill(pid, SIGKILL);
-		}
-	}
 
 	return -1;
 }
@@ -359,7 +343,7 @@ static int audio_out_set_format(struct audio_stream *stream, audio_format_t form
 {
 	struct tinyalsa_audio_stream_out *stream_out;
 
-	ALOGD("%s(%p, %d)", __func__, stream, format);
+	//ALOGD("%s(%p, %d)", __func__, stream, format);
 
 	if(stream == NULL)
 		return -1;
@@ -385,7 +369,7 @@ static int audio_out_standby(struct audio_stream *stream)
 	struct tinyalsa_audio_stream_out *stream_out;
 	int rc;
 
-	ALOGD("%s(%p)", __func__, stream);
+	//ALOGD("%s(%p)", __func__, stream);
 
 	if(stream == NULL)
 		return -1;
@@ -415,7 +399,7 @@ static int audio_out_standby(struct audio_stream *stream)
 
 static int audio_out_dump(const struct audio_stream *stream, int fd)
 {
-	ALOGD("%s(%p, %d)", __func__, stream, fd);
+	//ALOGD("%s(%p, %d)", __func__, stream, fd);
 
 	return 0;
 }
@@ -424,10 +408,11 @@ static int audio_out_set_parameters(struct audio_stream *stream, const char *kvp
 {
 	struct tinyalsa_audio_stream_out *stream_out;
 	struct str_parms *parms;
+	char value_string[32] = { 0 };
 	int value;
 	int rc;
 
-	ALOGD("%s(%p, %s)", __func__, stream, kvpairs);
+	//ALOGD("%s(%p, %s)", __func__, stream, kvpairs);
 
 	if(stream == NULL || kvpairs == NULL)
 		return -1;
@@ -441,9 +426,11 @@ static int audio_out_set_parameters(struct audio_stream *stream, const char *kvp
 	if(parms == NULL)
 		return -1;
 
-	rc = str_parms_get_int(parms, AUDIO_PARAMETER_STREAM_ROUTING, &value);
+	rc = str_parms_get_str(parms, AUDIO_PARAMETER_STREAM_ROUTING, value_string, sizeof(value_string));
 	if(rc < 0)
 		goto error_params;
+
+	value = atoi(value_string);
 
 	pthread_mutex_lock(&stream_out->device->lock);
 
@@ -464,12 +451,13 @@ static int audio_out_set_parameters(struct audio_stream *stream, const char *kvp
 
 error_params:
 	str_parms_destroy(parms);
+
 	return -1;
 }
 
 static char *audio_out_get_parameters(const struct audio_stream *stream, const char *keys)
 {
-	ALOGD("%s(%p, %s)", __func__, stream, keys);
+	//ALOGD("%s(%p, %s)", __func__, stream, keys);
 
 	return strdup("");
 }
@@ -479,20 +467,16 @@ static uint32_t audio_out_get_latency(const struct audio_stream_out *stream)
 	struct tinyalsa_audio_stream_out *stream_out;
 	uint32_t latency;
 
+	//ALOGD("%s(%p)", __func__, stream);
+
 	if(stream == NULL)
-		return 0;
+		return -1;
 
 	stream_out = (struct tinyalsa_audio_stream_out *) stream;
-
-	if(stream_out->standby || !stream_out->pcm) {
-		return 0;
-	}
 
 	latency = (stream_out->mixer_props->period_size *
 		stream_out->mixer_props->period_count * 1000) /
 		stream_out->mixer_props->rate;
-
-	ALOGD("%s(%p) -> %u", __func__, stream, latency);
 
 	return latency;
 }
@@ -553,8 +537,6 @@ static ssize_t audio_out_write(struct audio_stream_out *stream,
 			goto error;
 		}
 
-		audio_out_set_route(stream_out, stream_out->device_current);
-
 		stream_out->standby = 0;
 	}
 
@@ -577,21 +559,21 @@ error:
 static int audio_out_get_render_position(const struct audio_stream_out *stream,
 	uint32_t *dsp_frames)
 {
-	ALOGD("%s(%p, %p)", __func__, stream, dsp_frames);
+	//ALOGD("%s(%p, %p)", __func__, stream, dsp_frames);
 
 	return -EINVAL;
 }
 
 static int audio_out_add_audio_effect(const struct audio_stream *stream, effect_handle_t effect)
 {
-	ALOGD("%s(%p, %p)", __func__, stream, effect);
+	//ALOGD("%s(%p, %p)", __func__, stream, effect);
 
 	return 0;
 }
 
 static int audio_out_remove_audio_effect(const struct audio_stream *stream, effect_handle_t effect)
 {
-	ALOGD("%s(%p, %p)", __func__, stream, effect);
+	//ALOGD("%s(%p, %p)", __func__, stream, effect);
 
 	return 0;
 }

@@ -78,7 +78,8 @@ int audio_ril_interface_set_mic_mute(struct tinyalsa_audio_ril_interface *ril_in
    * this function is just stubbed out there.  So let's not
    * bother with it
    */
-    return 0;
+	return 0;
+
 }
 
 int audio_ril_interface_set_voice_volume(struct tinyalsa_audio_ril_interface *ril_interface,
