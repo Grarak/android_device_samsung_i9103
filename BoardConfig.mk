@@ -15,6 +15,9 @@
 LOCAL_PATH := device/samsung/i9103
 TARGET_SPECIFIC_HEADER_PATH := $(LOCAL_PATH)/include
 
+USE_CAMERA_STUB := false
+BOARD_USES_GENERIC_AUDIO := false
+
 # CPU
 TARGET_ARCH := arm
 TARGET_CPU_ABI := armeabi-v7a
@@ -79,14 +82,13 @@ TARGET_NO_RADIOIMAGE := true
 # Required to build a recovery image of 5MB max
 ifeq ($(TARGET_NO_RECOVERY),false)
     BOARD_CUSTOM_BOOTIMG_MK := $(LOCAL_PATH)/recovery/bootimg.mk
-    TARGET_PREBUILT_RECOVERY_KERNEL := $(LOCAL_PATH)/recovery/kernel-selinux
 endif
 
 # Hardware tunables
 BOARD_HARDWARE_CLASS := hardware/samsung/cmhw
 
 # RIL
-#BOARD_PROVIDES_LIBRIL := true
+BOARD_PROVIDES_LIBRIL := true
 BOARD_MODEM_TYPE := xmm6260
 BOARD_MOBILEDATA_INTERFACE_NAME := "rmnet0"
 

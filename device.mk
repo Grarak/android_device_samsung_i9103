@@ -37,10 +37,6 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/init.n1.usb.rc:root/init.n1.usb.rc \
     $(LOCAL_PATH)/rootdir/ueventd.n1.rc:root/ueventd.n1.rc
 
-# Recovery
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/recovery/twrp.fstab:recovery/root/etc/twrp.fstab
-
 # Permissions
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.audio.low_latency.xml:system/etc/permissions/android.hardware.audio.low_latency.xml \
