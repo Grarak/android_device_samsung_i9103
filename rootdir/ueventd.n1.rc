@@ -40,4 +40,3 @@
 # for usb printer
 /dev/bus/usb/*	0660	system	usb
 /dev/usb/lp*	0660	system	usb
-

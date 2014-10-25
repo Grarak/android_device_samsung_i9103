@@ -15,8 +15,8 @@
 LOCAL_PATH := device/samsung/i9103
 TARGET_SPECIFIC_HEADER_PATH := $(LOCAL_PATH)/include
 
-USE_CAMERA_STUB := false
-BOARD_USES_GENERIC_AUDIO := false
+# Assert
+TARGET_OTA_ASSERT_DEVICE := galaxyr,i9103,GT-I9103,GTI9103
 
 # CPU
 TARGET_ARCH := arm
@@ -26,14 +26,11 @@ TARGET_CPU_SMP := true
 TARGET_ARCH_VARIANT := armv7-a
 TARGET_ARCH_VARIANT_CPU := cortex-a9
 TARGET_CPU_VARIANT := generic
-# Avoid the generation of ldrcc instructions
 NEED_WORKAROUND_CORTEX_A9_745320 := true
-# DO NOT change the following line to vfpv3 as it is not really supported on our device!
 TARGET_ARCH_VARIANT_FPU := vfpv3-d16
 ARCH_ARM_HAVE_TLS_REGISTER := true
 ARCH_ARM_USE_NON_NEON_MEMCPY := true
 
-#TARGET_HAVE_TEGRA_ERRATA_657451 := true
 BOARD_VENDOR := samsung
 TARGET_BOARD_PLATFORM := tegra
 TARGET_TEGRA_VERSION := ap20
@@ -47,18 +44,6 @@ BOARD_KERNEL_PAGESIZE := 2048
 BOARD_KERNEL_BASE := 0x10000000
 BOARD_KERNEL_CMDLINE := mem=511M@0M secmem=1M@511M mem=512M@512M vmalloc=256M fota_boot=false tegra_fbmem=800K@0x18012000 video=tegrafb console=ram usbcore.old_scheme_first=1 lp0_vec=8192@0x1819E000 emmc_checksum_done=true emmc_checksum_pass=true tegraboot=sdmmc gpt
 
-#BOARD_KERNEL_CMDLINE := mem=511M@0M secmem=1M@511M mem=512M@512M vmalloc=256M fota_boot=false video=tegrafb console=ram usbcore.old_scheme_first=1 #emmc_checksum_done=true emmc_checksum_pass=true tegraboot=sdmmc gpt 
-
-# still required for apanic_mmc, todo: should check the gpt partition labels
-#BOARD_KERNEL_CMDLINE += mmcparts=mmcblk0:p1(EFS),p2(APP),p3(CAC),p4(IMS),p5(MSC),p6(UDA),p7(MDM),p8(SOS),p9(LNX),p10(OTA),p11(HID);
-
-# no more required with tegra atag's patch (from bootloader)
-# BOARD_KERNEL_CMDLINE += tegra_fbmem=800K@0x18012000 lp0_vec=8192@0x1819E000
-
-# kernel modules location (busybox)
-KERNEL_MODULES_DIR := /system/lib/modules
-
-
 # Filesystem
 BOARD_BOOTIMAGE_PARTITION_SIZE     := 8388608
 BOARD_RECOVERYIMAGE_PARTITION_SIZE := 5388288
@@ -66,23 +51,11 @@ BOARD_SYSTEMIMAGE_PARTITION_SIZE   := 629145600
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 2147483648
 BOARD_FLASH_BLOCK_SIZE := 4096
 
-# Use this flag if the board has a ext4 partition larger than 2gb
-BOARD_HAS_LARGE_FILESYSTEM := true
-
-#TARGET_PREBUILT_KERNEL = device/samsung/i9103/kernel
-
 TARGET_KERNEL_SOURCE := kernel/samsung/n1
 TARGET_KERNEL_CONFIG := cyanogenmod_i9103_defconfig
 
-TARGET_NO_KERNEL := false
-TARGET_NO_RECOVERY := false
 TARGET_NO_BOOTLOADER := true
 TARGET_NO_RADIOIMAGE := true
-
-# Required to build a recovery image of 5MB max
-ifeq ($(TARGET_NO_RECOVERY),false)
-    BOARD_CUSTOM_BOOTIMG_MK := $(LOCAL_PATH)/recovery/bootimg.mk
-endif
 
 # Hardware tunables
 BOARD_HARDWARE_CLASS := hardware/samsung/cmhw
@@ -90,19 +63,18 @@ BOARD_HARDWARE_CLASS := hardware/samsung/cmhw
 # RIL
 BOARD_PROVIDES_LIBRIL := true
 BOARD_MODEM_TYPE := xmm6260
-BOARD_MOBILEDATA_INTERFACE_NAME := "rmnet0"
 
 # Audio
 BOARD_USES_GENERIC_AUDIO := false
 BOARD_USE_TINYALSA_AUDIO := true
-#COMMON_GLOBAL_CFLAGS += -DSTE_FM
-#BOARD_USES_STE_FMRADIO := true
 
 # Camera
-BOARD_USES_PROPRIETARY_LIBCAMERA := true
-BOARD_SECOND_CAMERA_DEVICE := true
+USE_CAMERA_STUB := false
 BOARD_CAMERA_HAVE_ISO := true
-COMMON_GLOBAL_CFLAGS += -DHAVE_ISO -DDISABLE_HW_ID_MATCH_CHECK -DNEEDS_VECTORIMPL_SYMBOLS
+COMMON_GLOBAL_CFLAGS += -DHAVE_ISO
+COMMON_GLOBAL_CFLAGS += -DDISABLE_HW_ID_MATCH_CHECK
+COMMON_GLOBAL_CFLAGS += -DNEEDS_VECTORIMPL_SYMBOLS
+COMMON_GLOBAL_CFLAGS += -DSAMSUNG_CAMERA_HARDWARE
 
 # Graphics
 BOARD_EGL_CFG := $(LOCAL_PATH)/configs/egl.cfg
@@ -112,7 +84,6 @@ BOARD_NO_ALLOW_DEQUEUE_CURRENT_BUFFER := true
 SKIP_SET_METADATA := true
 BOARD_USE_MHEAP_SCREENSHOT := true
 BOARD_USES_HWCOMPOSER := true
-#BOARD_EGL_NEEDS_LEGACY_FB := true
 BOARD_EGL_NEEDS_FNW := true
 MAX_EGL_CACHE_KEY_SIZE := 4096
 MAX_EGL_CACHE_SIZE := 2146304
@@ -152,58 +123,28 @@ WIFI_BAND                       := 802_11_ABG
 BOARD_LEGACY_NL80211_STA_EVENTS := true
 BOARD_HAVE_SAMSUNG_WIFI         := true
 
-# Custom squisher, optional final step script (disabled in cm10.1)
-# TARGET_CUSTOM_RELEASETOOL := device/samsung/i9103/tools/squisher
-
-# Assert
-TARGET_OTA_ASSERT_DEVICE := galaxyr,i9103,GT-I9103,GTI9103
-
 # Vold
 BOARD_VOLD_MAX_PARTITIONS := 12
 BOARD_VOLD_EMMC_SHARES_DEV_MAJOR := true
 BOARD_VOLD_DISC_HAS_MULTIPLE_MAJORS := true
-BOARD_USE_USB_MASS_STORAGE_SWITCH := true
 TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/devices/platform/fsl-tegra-udc/gadget/lun%d/file"
 
-BOARD_HAS_SDCARD_INTERNAL := true
-
-# LPM charge mode, should be /sys/module/kernel/parameters/lpm_boot but doesnt works
-# /sys/class/power_supply/battery/batt_charging_source equals 2 when a branded charger is connected
-#
+# Charger
 BOARD_CHARGING_MODE_BOOTING_LPM := "/sys/class/power_supply/ac/online"
 BOARD_BATTERY_DEVICE_NAME := "battery"
 BOARD_CHARGER_RES := $(LOCAL_PATH)/rootdir/charger
-
-# EMMC brickbug is removed in the kernel, but be better safe than sorry.
-BOARD_SUPPRESS_EMMC_WIPE := true
 
 # Recovery
 TARGET_RECOVERY_INITRC := $(LOCAL_PATH)/recovery/init.recovery.n1.rc
 BOARD_CUSTOM_GRAPHICS := ../../../$(LOCAL_PATH)/recovery/graphics.c
 TARGET_RECOVERY_FSTAB := $(LOCAL_PATH)/rootdir/fstab.n1
 RECOVERY_FSTAB_VERSION := 2
-
+BOARD_CUSTOM_BOOTIMG_MK := $(LOCAL_PATH)/recovery/bootimg.mk
+BOARD_HAS_LARGE_FILESYSTEM := true
 BOARD_UMS_LUNFILE := "/sys/devices/platform/fsl-tegra-udc/gadget/lun%d/file"
 BOARD_USES_MMCUTILS := true
+BOARD_SUPPRESS_EMMC_WIPE := true
 BOARD_HAS_NO_SELECT_BUTTON := true
-
-# TWRP
-DEVICE_RESOLUTION := 480x800
-
-TW_INTERNAL_STORAGE_PATH := "/sdcard"
-TW_INTERNAL_STORAGE_MOUNT_POINT := "sdcard"
-TW_EXTERNAL_STORAGE_PATH := "/external_sd"
-TW_EXTERNAL_STORAGE_MOUNT_POINT := "external_sd"
-TW_NO_SCREEN_BLANK := true
-TW_NO_REBOOT_BOOTLOADER := true
-TW_DEFAULT_EXTERNAL_STORAGE := true
-TW_HAS_DOWNLOAD_MODE := true
-TW_BRIGHTNESS_PATH := "/sys/class/backlight/pwm-backlight/brightness"
-TW_MAX_BRIGHTNESS := 255
-TWHAVE_SELINUX := true
-
-# Override healthd HAL
-BOARD_HAL_STATIC_LIBRARIES := libhealthd.n1
 
 # SElinux
 BOARD_SEPOLICY_DIRS += \
@@ -223,5 +164,22 @@ BOARD_SEPOLICY_UNION += \
     sensors_config.te \
     compatibility.te
 
-# Inherit from the proprietary version
+# Override healthd HAL
+BOARD_HAL_STATIC_LIBRARIES := libhealthd.n1
+
+# TWRP
+DEVICE_RESOLUTION := 480x800
+
+TW_INTERNAL_STORAGE_PATH := "/sdcard"
+TW_INTERNAL_STORAGE_MOUNT_POINT := "sdcard"
+TW_EXTERNAL_STORAGE_PATH := "/external_sd"
+TW_EXTERNAL_STORAGE_MOUNT_POINT := "external_sd"
+TW_NO_SCREEN_BLANK := true
+TW_NO_REBOOT_BOOTLOADER := true
+TW_DEFAULT_EXTERNAL_STORAGE := true
+TW_HAS_DOWNLOAD_MODE := true
+TW_BRIGHTNESS_PATH := "/sys/class/backlight/pwm-backlight/brightness"
+TW_MAX_BRIGHTNESS := 255
+TWHAVE_SELINUX := true
+
 -include vendor/samsung/i9103/BoardConfigVendor.mk

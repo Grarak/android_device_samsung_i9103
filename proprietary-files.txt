@@ -51,7 +51,7 @@ lib/libnvasfparserhal.so
 lib/libmlplatform.so
 lib/libnvcpud.so
 lib/libnvmm_camera.so
-lib/hw/vendor-camera.tegra.so
+lib/hw/camera.vendor.tegra.so
 lib/hw/gps.tegra.so
 lib/hw/gralloc.tegra.so
 lib/hw/sensors.n1.so
