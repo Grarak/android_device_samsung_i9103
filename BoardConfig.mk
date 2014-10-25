@@ -180,6 +180,7 @@ TW_DEFAULT_EXTERNAL_STORAGE := true
 TW_HAS_DOWNLOAD_MODE := true
 TW_BRIGHTNESS_PATH := "/sys/class/backlight/pwm-backlight/brightness"
 TW_MAX_BRIGHTNESS := 255
+TW_EXCLUDE_MTP := true
 TWHAVE_SELINUX := true
 
 -include vendor/samsung/i9103/BoardConfigVendor.mk
