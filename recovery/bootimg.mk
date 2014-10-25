@@ -16,7 +16,6 @@ $(recovery_uncompressed_ramdisk): $(MINIGZIP) $(TARGET_RECOVERY_ROOT_TIMESTAMP)
 	@rm -f $(TARGET_RECOVERY_ROOT_OUT)/lpm.rc
 	@rm -f $(TARGET_RECOVERY_ROOT_OUT)/charger
 	@rm -rf $(TARGET_RECOVERY_ROOT_OUT)/res/images/charger/
-	@rm -f $(TARGET_RECOVERY_ROOT_OUT)/sbin/anicharger
 	cp -f $(LOCAL_PATH)/twrp.fstab $(TARGET_RECOVERY_ROOT_OUT)/etc/
 	$(MKBOOTFS) $(TARGET_RECOVERY_ROOT_OUT) > $@
 
