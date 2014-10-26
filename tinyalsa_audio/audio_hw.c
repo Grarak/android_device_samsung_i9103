@@ -166,7 +166,7 @@ static int audio_hw_set_mode(struct audio_hw_device *dev, int mode)
 
 				//Only enable dualmic for earpiece.
 				if(device_modem == AUDIO_DEVICE_OUT_EARPIECE)
-				  audio_ril_interface_set_twomic(ril_interface,TWO_MIC_SOLUTION_ON);
+					audio_ril_interface_set_twomic(ril_interface,TWO_MIC_SOLUTION_ON);
 
 				if(device->voice_volume)
 					audio_ril_interface_set_voice_volume(ril_interface, device_modem, device->voice_volume);
@@ -274,11 +274,10 @@ static int audio_hw_set_parameters(struct audio_hw_device *dev,
 {
 	struct tinyalsa_audio_device *device;
 	struct str_parms *parms;
-	char value_string[32] = { 0 };
 	int value;
 	int rc;
 
-	ALOGD("%s(%p, %s)++", __func__, dev, kvpairs);
+	ALOGD("%s(%p, %s)", __func__, dev, kvpairs);
 
 	if(dev == NULL || kvpairs == NULL)
 		return -1;
@@ -292,11 +291,16 @@ static int audio_hw_set_parameters(struct audio_hw_device *dev,
 	if(parms == NULL)
 		return -1;
 
-	rc = str_parms_get_str(parms, AUDIO_PARAMETER_STREAM_ROUTING, value_string, sizeof(value_string));
-	if(rc < 0)
-		goto error_params;
+	// Only "routing" parameter is handled here
+	rc = str_parms_get_int(parms, AUDIO_PARAMETER_STREAM_ROUTING, &value);
+	switch (rc) {
+		case -EINVAL:
+			goto error_params;
 
-	value = atoi(value_string);
+		case -ENOENT:
+		default:
+			goto other_param;
+	}
 
 	pthread_mutex_lock(&device->lock);
 
@@ -321,15 +325,15 @@ static int audio_hw_set_parameters(struct audio_hw_device *dev,
 
 	str_parms_destroy(parms);
 
-	ALOGD("%s(%p, %s)--", __func__, dev, kvpairs);
+	ALOGD("%s(%p, %s)", __func__, dev, kvpairs);
 
 	return 0;
 
 error_params:
+	ALOGW("%s(%p, %s) PARAMETER ERROR", __func__, dev, kvpairs);
+	str_parms_dump(parms);
+other_param:
 	str_parms_destroy(parms);
-
-	ALOGD("%s(%p, %s)-- (PARAMETER ERROR)", __func__, dev, kvpairs);
-
 	return -1;
 }
 

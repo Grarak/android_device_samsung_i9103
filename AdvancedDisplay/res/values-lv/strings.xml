@@ -16,25 +16,14 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string-array name="mdnie_scenario_entries">
-    <item>وەشان مۆد (بنه‌ڕه‌ت)</item>
-    <item>یو ئای</item>
-    <item>ڤیدیۆ</item>
-    <item>ڤیدیۆی گەرم</item>
-    <item>ڤیدیۆی سارد</item>
-    <item>کامێرا</item>
-    <item>ڕێنیشاندەری</item>
-    <item>پیشەنگا</item>
-    <item>ڤی تی</item>
-  </string-array>
-  <string-array name="mdnie_mode_entries">
-    <item>دینامیک (بنه‌ڕه‌ت)</item>
-    <item>ستاندارد</item>
-    <item>سروشتی</item>
-    <item>فیلم</item>
-  </string-array>
-  <string-array name="mdnie_negative_entries">
-    <item>ئاسایی</item>
-    <item>پێچەوانەکرا</item>
-  </string-array>
+  <string name="app_name">Papildu displejs</string>
+  <string name="defaults_button">Atstatīt uz noklusēto</string>
+  <string name="category_screen_title">Ekrāns</string>
+  <string name="screen_colors_title">Krāsas</string>
+  <string name="mdnie_scenario_title_head">Scenārijs</string>
+  <string name="mdnie_scenario_summary_head">Uzstādīt mDNIe scenāriju</string>
+  <string name="mdnie_mode_title_head">Režīms</string>
+  <string name="mdnie_mode_summary_head">Uzstādīt mDNIe režīmu</string>
+  <string name="mdnie_negative_title_head">Negatīvs režīms</string>
+  <string name="mdnie_negative_summary_head">Ieslēgt/izslēgt apgrieztas krāsas</string>
 </resources>
