@@ -345,7 +345,7 @@ on boot
     setprop nvcpud.config_refresh_ms 30000
 #   start nvcpud
 
-service cpboot-daemon /system/bin/cbd -d -o t -p 7
+service cpboot-daemon /sbin/cbd -d -o t -p 7
     class main
     user root
     group radio cache inet misc audio log sdcard_rw qcom_oncrpc qcom_diag

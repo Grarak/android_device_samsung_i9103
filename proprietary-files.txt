@@ -1,5 +1,4 @@
 bin/nvcpud
-bin/cbd
 etc/firmware/nvmm_wavdec.axf
 etc/firmware/nvmm_mpeg4dec.axf
 etc/firmware/nvmm_vc1dec.axf

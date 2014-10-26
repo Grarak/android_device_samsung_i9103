@@ -35,7 +35,8 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/lpm.rc:root/lpm.rc \
     $(LOCAL_PATH)/rootdir/init.n1.rc:root/init.n1.rc \
     $(LOCAL_PATH)/rootdir/init.n1.usb.rc:root/init.n1.usb.rc \
-    $(LOCAL_PATH)/rootdir/ueventd.n1.rc:root/ueventd.n1.rc
+    $(LOCAL_PATH)/rootdir/ueventd.n1.rc:root/ueventd.n1.rc \
+    $(LOCAL_PATH)/configs/cbd:root/sbin/cbd
 
 # Permissions
 PRODUCT_COPY_FILES += \
